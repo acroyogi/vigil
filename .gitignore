@@ -1,6 +1,9 @@
 # gbr customs
 gsecrets.py
 
+#test output image repo
+camera-tests-012/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

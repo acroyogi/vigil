@@ -1,3 +1,2 @@
-import gsecrets
-
-print(gsecrets.vonage_key)
+import cv2
+print(cv2.getBuildInformation())
