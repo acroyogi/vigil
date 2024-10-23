@@ -1,14 +1,16 @@
-import cv2
-import get_grab
-from datetime import datetime, timedelta
 import os
+import cv2
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
+
+from gsecrets import *
+import get_grab
 
 # Load the variables from .env
 load_dotenv()
 
-# Replace with your RTSP URL
-rtsp_url = 'rtsp://admin:vanguard2024@192.168.1.68:554'
+# set the camera stream
+rtsp_url = f"rtsp://{reolink_rtsp_username}:{reolink_rtsp_pw}@{reolink_rtsp_ip}:{reolink_rtsp_port}"
 
 now = datetime.now()
 

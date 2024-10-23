@@ -131,6 +131,7 @@ def annotate_grab(image, tensors, labels):
         # map text colors to RGB values
         if label_object[label] == "red" :
             supercolor = (255, 0, 0, 128)
+            gunflag = true
         if label_object[label] == "green" :
             supercolor = (0, 166, 0, 128)
         if label_object[label] == "blue" :
@@ -140,13 +141,13 @@ def annotate_grab(image, tensors, labels):
         # TODO: make it actually semi-trans. currently it renders opaque
 
         draw.rectangle(
-            [label_x, label_y, label_x + text_width + 6, label_y + text_height + 5],
+            [label_x, label_y, label_x + text_width + (x_textpad*2), label_y + text_height + y_textpad],
             # fill=(255, 0, 0, 128)  # 50% transparent red (same as the outline)
             fill=supercolor  # 50% transparent red (same as the outline)
         )
         
         # Draw the text label on top of the semi-transparent background
-        draw.text((label_x + 3, label_y), label, fill="white", font=font, font_size=24)
+        draw.text((label_x + x_textpad, label_y), label, fill="white", font=font, font_size=24)
 
     return image
 
