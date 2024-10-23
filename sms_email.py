@@ -1,13 +1,43 @@
 import smtplib
 from email.message import EmailMessage
+from datetime import datetime
 from gsecrets import *
 
+# Get the current date and time
+now = datetime.now()
+# Format the date and time as a string
+date_time_str = now.strftime("%Y-%m-%d %H:%M:%S")
 
-# smtp_server=""
-# smtp_ssl=True
-# smtp_port=""
-# smtp_username=""
-# smtp_password=""
+basic_alert_subject = "VIGIL ALERT!! [v012]"
+
+alert_message = "ALERT-WEAPON DETECTED"
+
+sample_alert_message = f"""
+!!ALERT!! WEAPON DETECTED
+=======================
+ADDRESS:
+1521 North Highland Ave.,
+Los Angeles, CA 90028
+LOCATION:
+SE entrance
+(school auditorium)
+
+DESCRIP: 
+black hoodie, backpack
+WEAPON-TYPE: 
+assault rifle
+
+MAPLINK:
+https://www.google.com/maps/search/?api=1&query=34.098248,-118.340965
+
+GEOSTAMP:
+34.098248, -118.340965
+TIMESTAMP:
+{date_time_str}
+VIGIL:
+HWOOD_HS_LA.8693
+"""
+
 
 def loginSendQuit(server, to_email, msg):
     # server.esmtp_features['auth'] = 'LOGIN PLAIN'
@@ -32,9 +62,9 @@ def send_email(to_email, subject, message, override=False):
         msg.set_payload(body)
         if smtp_ssl ^ override:
             with smtplib.SMTP(smtp_server, smtp_port) as server:
-                #server.set_debuglevel(True)
+                server.set_debuglevel(True)
                 server.starttls()
-                self.loginSendQuit(server, to_email, msg)
+                loginSendQuit(server, to_email, msg)
         else:
             with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
                 #server.set_debuglevel(True)
@@ -45,5 +75,5 @@ def send_email(to_email, subject, message, override=False):
     except Exception as e:
         print(f"Failed to send email: {e}")
 
-
-send_email("3104879662@mypixmessages.com", "WEAPON ALERT", "ALERT: Weapon detected")
+# SMS email gateway : number@server, subject, message
+send_email(smtp_phonealias, basic_alert_subject, sample_alert_message)
