@@ -8,9 +8,10 @@ from PIL import Image, ImageDraw, ImageFont
 from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
 import numpy as np
 
-from gsecrets import *
+from _gsecrets import *
 import launch
-import get_grab
+import img_proc
+import sms_email
  
  
 # Load the variables from .env
@@ -22,8 +23,8 @@ searchtext, labels = launch.start_vigil()
 
 # cue up the AI monster
 print("\nPlease wait,\n>>> LOADING NEURAL NET...")
-processor = AutoProcessor.from_pretrained(get_grab.model_id)
-model = AutoModelForZeroShotObjectDetection.from_pretrained(get_grab.model_id).to(get_grab.device)
+processor = AutoProcessor.from_pretrained(img_proc.model_id)
+model = AutoModelForZeroShotObjectDetection.from_pretrained(img_proc.model_id).to(img_proc.device)
 
 # record the start time
 now = datetime.now()
@@ -39,6 +40,9 @@ print("    camIP: " + reolink_rtsp_ip + ":" + reolink_rtsp_port)
 
 cap = cv2.VideoCapture(rtsp_url)
 print("    CAMERA STREAM ACQUIRED")
+
+sms_email.send_alert(smtp_phonealias, sms_email.basic_launch_subject, sms_email.launch_message)
+
 
 
 if not cap.isOpened():
@@ -89,7 +93,7 @@ else:
         # and outputs a leblled image with bounding boxes
         # def rtsp_framegrab(processor, model, frame, searchtext):
 
-        image = get_grab.rtsp_framegrab(processor, model, frame, searchtext)
+        image = img_proc.rtsp_framegrab(processor, model, frame, searchtext)
 
         #alt-DEBUG
         # cv2.imshow('RTSP Stream', frame)

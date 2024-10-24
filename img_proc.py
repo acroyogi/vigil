@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime, timedelta
 import sms_email
-from gsecrets import *
+from _gsecrets import *
 
 import cv2
 import torch
@@ -129,8 +129,6 @@ def annotate_grab(image, tensors, labels):
         # map text colors to RGB values
         if label_object[label] == "red" :
             supercolor = (255, 0, 0, 128)
-            # gunflag = True
-            # print(f"    {BLINK}{RED}!!! ALERT : WEAPON DETECTED !!!{RESET}")
         if label_object[label] == "green" :
             supercolor = (0, 166, 0, 128)
         if label_object[label] == "blue" :

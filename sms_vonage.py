@@ -1,9 +1,9 @@
 import vonage
 from datetime import datetime
-import gsecrets
+import _gsecrets
 
 # Twilio configuration (replace with your actual credentials)
-client = vonage.Client(key = gsecrets.vonage_key, secret = gsecrets.vonage_secret)
+client = vonage.Client(key = _gsecrets.vonage_key, secret = _gsecrets.vonage_secret)
 sms = vonage.Sms(client)
 
 # Get the current date and time
