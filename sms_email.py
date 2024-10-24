@@ -8,6 +8,10 @@ now = datetime.now()
 # Format the date and time as a string
 date_time_str = now.strftime("%Y-%m-%d %H:%M:%S")
 
+tYELLOW = "\033[33m"
+tRESET = "\033[0m"  # Resets all formatting
+
+
 basic_alert_subject = "VIGIL ALERT!! [v012]"
 
 alert_message = "ALERT-WEAPON DETECTED"
@@ -34,7 +38,7 @@ GEOSTAMP:
 34.098248, -118.340965
 TIMESTAMP:
 {date_time_str}
-VIGIL:
+VIGIL_ID:
 HWOOD_HS_LA.8693
 """
 
@@ -45,7 +49,7 @@ def loginSendQuit(server, to_email, msg):
     server.sendmail(smtp_username, to_email, msg.as_string())
     server.quit()
 
-def send_email(to_email, subject, message, override=False):
+def send_alert(to_email, subject, message, override=False):
     try:
         msg = EmailMessage()
         msg["From"] = smtp_username
@@ -70,10 +74,9 @@ def send_email(to_email, subject, message, override=False):
                 #server.set_debuglevel(True)
                 loginSendQuit(server, to_email, msg)
 
-        print(f"Email sent successfully to {to_email}")
+        print(f"\n+++ ALERT SMS successfully transmitted:\n{tYELLOW}    {alert_user} @ {alert_phone}{tRESET}")
 
     except Exception as e:
         print(f"Failed to send email: {e}")
 
 # SMS email gateway : number@server, subject, message
-send_email(smtp_phonealias, basic_alert_subject, sample_alert_message)

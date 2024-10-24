@@ -1,6 +1,9 @@
 import requests
-import cv2
+from datetime import datetime, timedelta
+import sms_email
+from gsecrets import *
 
+import cv2
 import torch
 from PIL import Image, ImageDraw, ImageFont
 from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
@@ -11,39 +14,23 @@ import sys
 
 filedir_input = "camera-tests-012"
 filedir_output = "camera-tests-012/outputs-012"
+gun_trigger = 0
 
 model_id = "IDEA-Research/grounding-dino-tiny"
 # device = "cuda"
 device = "cpu"
 
-print ("""
-       
+# ANSI escape sequences for color and blink i nterminal output
+# used for weapons notification message
+RED = "\033[31m"
+GREEN = "\033[32m"
+BLINK = "\033[5m"
+RESET = "\033[0m"  # Resets all formatting
 
-       +-----------------------------------+
-        VIGIL 
-        real time weapons detection system
 
-        v012.20241023
-        Gregory Roberts + John Heilman
-       +-----------------------------------+
 
-       """)
 
-# user input of objects to detect
-searchtext = input("\nType object classes to detect, separated by periods. \n(hit <enter> for default of 'person. face. gun.')\n>>> ")
-if searchtext == "":
-    searchtext = "gun. person. face."
-
-labels = [value.strip() for value in searchtext.split(".")]
-
-# cue up the AI monster
-print("\nPlease wait,\n>>> LOADING NEURAL NET...")
-processor = AutoProcessor.from_pretrained(model_id)
-model = AutoModelForZeroShotObjectDetection.from_pretrained(model_id).to(device)
-
-print("\n>>> ACCESSING RTSP VIDEO STREAM...\n")
-
-def rtsp_framegrab(frame):
+def rtsp_framegrab(processor, model, frame, searchtext):
     # Convert the OpenCV BGR image to RGB format
     rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
@@ -74,6 +61,17 @@ def rtsp_framegrab(frame):
     # List of tensors
     tensors = my_object["boxes"]
     labels = my_object["labels"]
+
+    if "gun" in labels:
+        print(f"\n    {BLINK}{RED}!!! ALERT : WEAPON DETECTED !!!{RESET}")
+        
+        global gun_trigger
+        if gun_trigger == 0:
+            sms_email.send_alert(smtp_phonealias, sms_email.basic_alert_subject, sms_email.sample_alert_message)
+            gun_trigger = 1
+
+
+        
 
     annotated_image = annotate_grab(image, tensors, labels)
 
@@ -131,7 +129,8 @@ def annotate_grab(image, tensors, labels):
         # map text colors to RGB values
         if label_object[label] == "red" :
             supercolor = (255, 0, 0, 128)
-            gunflag = true
+            # gunflag = True
+            # print(f"    {BLINK}{RED}!!! ALERT : WEAPON DETECTED !!!{RESET}")
         if label_object[label] == "green" :
             supercolor = (0, 166, 0, 128)
         if label_object[label] == "blue" :
@@ -158,13 +157,19 @@ def image_save(image):
     # Save a serialized image with tensors superimposed
     # into designated output directory
 
+    # Get the current time
+    now = datetime.now()
+
+    # Format the datetime object as a string in the desired format
+    formatted_time = now.strftime("%Y%m%d-%H%M%S")
+
     # Generate 8 random digits as an integer array
-    random_digits = np.random.randint(0, 10, size=8)
+    random_digits = np.random.randint(0, 10, size=3)
 
     # Convert the array of digits to a string
-    random_string = ''.join(map(str, random_digits))
+    frame_id_str = formatted_time + "-" + ''.join(map(str, random_digits))
 
-    image.save(filedir_output + "/frame_" + random_string + ".png")
+    image.save(filedir_output + "/frame_" + frame_id_str + ".png")
 
 
 
