@@ -5,10 +5,10 @@ def start_vigil():
         
 
         +------------------------------------+
-          VIGIL 
+          A.L.F.R.E.D. 
           real time weapons detection system
 
-          v{g_version}.20241023
+          v{g_version}.20241024
           Gregory Roberts + John Heilman
         +------------------------------------+
 

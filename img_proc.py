@@ -167,11 +167,17 @@ def annotate_grab(image, tensors, labels):
     if gun_trigger == 2:
         print("\n>>> UPLOADING SCREENGRAB TO SECURE CLOUD...")
         # sms_email.send_email_with_image(smtp_phonealias, "VIGIL WEAPONS DETECT", "camera 001 LIVE", image)
-        ftp_serial_alert_filename = ftp_remote_path + "_" + gtimestamp + ".jpg"
+        # replace dynamic timecoded file link (above) with fixed file loc (overwrite)
+        # for DEMO ONLY
+        # ftp_serial_alert_filename = ftp_remote_path + "_" + gtimestamp + ".jpg"
+        ftp_serial_alert_filename = "__web/dsky-ai/web/app/vigil/20241024/img0023.jpg"
         sms_email.upload_to_sftp(ftp_server, ftp_username, ftp_password, local_serial_alert_filename, ftp_serial_alert_filename)
 
         gweb_imagelink = public_web_path +"wd_" + gtimestamp + ".jpg"
-        g_fullalert = sample_alert_message_prefix + gweb_imagelink + sample_alert_message_suffix + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # replace dynamic timecoded file link (above) with fixed file loc (overwrite)
+        # for DEMO ONLY
+        # g_fullalert = sample_alert_message_prefix + gweb_imagelink + sample_alert_message_suffix + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        g_fullalert = sample_alert_message_prefix + "https://dsky.ai/app/vigil/20241024/" + sample_alert_message_suffix + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         for alert_user in active_users:
             sms_email.send_alert(alert_users[alert_user], basic_alert_subject, g_fullalert)
 
