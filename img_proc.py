@@ -67,8 +67,8 @@ def rtsp_framegrab(processor, model, frame, searchtext):
         
         global gun_trigger
         if gun_trigger == 0:
-            # print("STUB : SEND ALERT EMAIL")
-            sms_email.send_alert(smtp_phonealias, sms_email.basic_alert_subject, sms_email.sample_alert_message)
+            print("\n=== STUB : SEND ALERT EMAIL")
+            # sms_email.send_alert(smtp_phonealias, sms_email.basic_alert_subject, sms_email.sample_alert_message)
             gun_trigger = 1
 
 
@@ -151,9 +151,32 @@ def annotate_grab(image, tensors, labels):
         draw.text((label_x + x_textpad, label_y - y_offset), label, fill="white", font=font)
 
     global gun_trigger
-    if gun_trigger == 1:
-        print("STUB : SEND IMAGE LINK")
+    global gtimestamp
+    global local_serial_alert_filename
+
+    if gun_trigger == 2:
+        print("\n>>> UPLOADING SCREENGRAB TO SECURE CLOUD...")
         # sms_email.send_email_with_image(smtp_phonealias, "VIGIL WEAPONS DETECT", "camera 001 LIVE", image)
+        ftp_serial_alert_filename = ftp_remote_path + "_" + gtimestamp + ".jpg"
+        sms_email.upload_to_sftp(ftp_server, ftp_username, ftp_password, local_serial_alert_filename, ftp_serial_alert_filename)
+
+        gweb_imagelink = public_web_path +"wd_" + gtimestamp + ".jpg"
+        g_fullalert = sample_alert_message_prefix + gweb_imagelink + sample_alert_message_suffix + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        sms_email.send_alert(smtp_phonealias, basic_alert_subject, g_fullalert)
+
+        # print("=== STUB : SEND IMAGE LINK")
+        # DEBUG: SMS with image link ONLY
+        # sms_email.send_alert(smtp_phonealias, "VIGIL Image Link", "click to view:\n" + gweb_imagelink)
+        
+        print(f"    LINK : {gweb_imagelink}")
+        gun_trigger = 99 # no longer used
+
+    if gun_trigger == 1:
+        print("\n>>> SAVING SCREENGRAB TO LOCAL ARCHIVE...")
+        # sms_email.send_email_with_image(smtp_phonealias, "VIGIL WEAPONS DETECT", "camera 001 LIVE", image)
+        gtimestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        local_serial_alert_filename = ftp_local_path + "_" + gtimestamp + ".jpg"
+        sms_email.save_image_locally(image, local_serial_alert_filename, quality=70)
         gun_trigger = 2
 
     return image

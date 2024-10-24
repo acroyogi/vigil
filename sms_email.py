@@ -4,12 +4,14 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
 
+from ftplib import FTP
+import paramiko
+
 from PIL import Image
 import io
 
 from datetime import datetime
 from _gsecrets import *
-
 
 
 # Get the current date and time
@@ -20,50 +22,15 @@ date_time_str = now.strftime("%Y-%m-%d %H:%M:%S")
 tYELLOW = "\033[33m"
 tRESET = "\033[0m"  # Resets all formatting
 
-basic_launch_subject = f"VIGIL ACTIVE [v{g_version}]"
-basic_alert_subject = f"VIGIL ALERT!! [v{g_version}]"
-alert_message = "ALERT-WEAPON DETECTED"
 
-launch_message = f"""
-VIGIL PERIMETER SECURITY
-=======================
-SYSTEM ACTIVATED
-{date_time_str}
-"""
-
-sample_alert_message = f"""
-!!ALERT!! WEAPON DETECTED
-=======================
-ADDRESS:
-1521 North Highland Ave.
-Los Angeles, CA 90028
-
-LOC: SE entrance
-(school auditorium)
-
-DESCRIP: 
-black hoodie, backpack
-WEAPON-TYPE: 
-assault rifle
-
-MAPLINK:
-https://www.google.com/maps/search/?api=1&query=34.098248,-118.340965
-
-TIMESTAMP:
-{date_time_str}
-VIGIL_ID:
-HWOOD_HS_LA.8693
-"""
-
-# GEOSTAMP:
-# 34.098248, -118.340965
-
-
+# a quick and dirty SMTP mail server login
 def loginSendQuit(server, to_email, msg):
     # server.esmtp_features['auth'] = 'LOGIN PLAIN'
     server.login(smtp_username, smtp_password)
     server.sendmail(smtp_username, to_email, msg.as_string())
     server.quit()
+
+
 
 def send_alert(to_email, subject, message, override=False):
     try:
@@ -73,11 +40,7 @@ def send_alert(to_email, subject, message, override=False):
         msg["Subject"] = subject
 
         body = message
-        # (
-        #     f" {message.author.global_name}:.\n"
-        #     f"Jump to message {message.jump_url}\n"
-        #     f"{message.content}"
-        # )
+
         msg.add_header("Content-Type", "text/plain")
         msg.set_payload(body)
         if smtp_ssl ^ override:
@@ -97,7 +60,7 @@ def send_alert(to_email, subject, message, override=False):
 
 
 
-# Compress and prepare the image
+# Compress as JPG and prepare the image for FTP
 def compress_image(pil_image, quality=70):
     img_byte_arr = io.BytesIO()
     pil_image.save(img_byte_arr, format='JPEG', quality=quality)
@@ -105,23 +68,49 @@ def compress_image(pil_image, quality=70):
     return img_byte_arr
 
 
+# 1. Save an image to the local file system as JPG
+def save_image_locally(pil_image, save_path, quality=70):
+    pil_image.save(save_path, format="JPEG", quality=quality)
+    print(f"    Image saved locally as\n    {save_path}")
+    return save_path
 
-# Upload the image to your web server via FTP
-def upload_image_to_ftp(ftp_host, ftp_user, ftp_pass, remote_path, pil_image):
-    # Compress the image to JPEG
-    img_byte_arr = compress_image(pil_image)
 
-    # Connect to the FTP server
-    ftp = FTP(ftp_host)
-    ftp.login(user=ftp_user, passwd=ftp_pass)
+# 2. Upload the image to the FTP server
+def upload_to_ftp(ftp_host, ftp_user, ftp_pass, local_file_path, remote_file_path):
+    with open(local_file_path, "rb") as file:
+        # Connect to FTP server
+        ftp = FTP(ftp_host)
+        ftp.login(user=ftp_user, passwd=ftp_pass)
+        # Upload the file
+        ftp.storbinary(f'STOR {remote_file_path}', file)
+        ftp.quit()
+        print(f"Uploaded {local_file_path} to FTP server at {ftp_host}/{remote_file_path}")
 
-    # Upload the image to the specified path on the server
-    ftp.storbinary(f'STOR {remote_path}', img_byte_arr)
+# 3. upload port 22 using SFTP
+# Create SFTP client and connect to server
+def upload_to_sftp(ftp_host, ftp_user, ftp_pass, local_file_path, remote_file_path):
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    # Close the connection
-    ftp.quit()
-    print(f"Image successfully uploaded to {ftp_host}/{remote_path}")
+    try:
+        # Connect to the SFTP server
+        client.connect(ftp_host, port=ftp_port, username=ftp_user, password=ftp_pass)
 
+        # Open the SFTP session
+        sftp = client.open_sftp()
+
+        # DEBUG: list files in the current directory
+        # print(sftp.listdir('.'))
+
+        # Upload a file
+        sftp.put(local_file_path, remote_file_path)
+
+        # Close the SFTP session
+        sftp.close()
+
+    finally:
+        # Close the SSH client
+        client.close()
 
 
 # Send email with image attachment
