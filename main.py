@@ -41,7 +41,7 @@ print("    camIP: " + reolink_rtsp_ip + ":" + reolink_rtsp_port)
 cap = cv2.VideoCapture(rtsp_url)
 print("    CAMERA STREAM ACQUIRED")
 
-sms_email.send_alert(smtp_phonealias, sms_email.basic_launch_subject, sms_email.launch_message)
+# sms_email.send_alert(smtp_phonealias, sms_email.basic_launch_subject, sms_email.launch_message)
 
 
 

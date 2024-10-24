@@ -67,6 +67,7 @@ def rtsp_framegrab(processor, model, frame, searchtext):
         
         global gun_trigger
         if gun_trigger == 0:
+            # print("STUB : SEND ALERT EMAIL")
             sms_email.send_alert(smtp_phonealias, sms_email.basic_alert_subject, sms_email.sample_alert_message)
             gun_trigger = 1
 
@@ -101,12 +102,15 @@ def annotate_grab(image, tensors, labels):
     }
 
     # Define a font
-    # TODO: a better, bolder font
-    font = ImageFont.load_default()
+    # font = ImageFont.load_default()
+    g_labelfontsize = 30
+    font = ImageFont.truetype("pricedown.otf", g_labelfontsize)
 
     # set the padding for the textbox
-    x_textpad = 3
+    x_textpad = 8
     y_textpad = 5
+    y_offset = 4
+    line_borderthick = 6
 
     # Superimpose each tensor as a rectangle on the image
     for tensor, label in zip(tensors, labels):
@@ -114,7 +118,7 @@ def annotate_grab(image, tensors, labels):
         # Denormalize the tensor coordinates to image dimensions
         x1, y1, x2, y2 = tensor # * torch.tensor([image_width, image_height, image_width, image_height])
         # Draw the rectangle on the image
-        draw.rectangle([x1, y1, x2, y2], outline=label_object[label], width=3)
+        draw.rectangle([x1, y1, x2, y2], outline=label_object[label], width=line_borderthick)
 
         # Get the text size using textbbox (returns the bounding box of the text)
         text_bbox = draw.textbbox((x1, y1), label, font=font)
@@ -144,7 +148,13 @@ def annotate_grab(image, tensors, labels):
         )
         
         # Draw the text label on top of the semi-transparent background
-        draw.text((label_x + x_textpad, label_y), label, fill="white", font=font, font_size=24)
+        draw.text((label_x + x_textpad, label_y - y_offset), label, fill="white", font=font)
+
+    global gun_trigger
+    if gun_trigger == 1:
+        print("STUB : SEND IMAGE LINK")
+        # sms_email.send_email_with_image(smtp_phonealias, "VIGIL WEAPONS DETECT", "camera 001 LIVE", image)
+        gun_trigger = 2
 
     return image
 

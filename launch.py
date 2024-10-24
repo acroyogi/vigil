@@ -2,18 +2,18 @@ def start_vigil():
     print ("""
         
 
-        +-----------------------------------+
-            VIGIL 
-            real time weapons detection system
+        +------------------------------------+
+          VIGIL 
+          real time weapons detection system
 
-            v012.20241023
-            Gregory Roberts + John Heilman
-        +-----------------------------------+
+          v015.20241023
+          Gregory Roberts + John Heilman
+        +------------------------------------+
 
         """)
 
     # user input of objects to detect
-    searchtext = input("\nType object classes to detect, separated by periods. \n(hit <enter> for default of 'person. face. gun.')\n>>> ")
+    searchtext = input("\nWelcome to VIGIL!\n\nType object classes to detect, separated by periods. \n(hit <enter> for default of 'person. face. gun.')\n>>> ")
     if searchtext == "":
         searchtext = "gun. person. face."
 
