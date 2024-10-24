@@ -1,4 +1,5 @@
 import os
+import sys
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
@@ -12,11 +13,17 @@ from _gsecrets import *
 from _localconfig import *
 import launch
 import img_proc
-# import sms_email
- 
- 
+# import sms_email 
+
+YELLOW = "\033[33m"
+RESET = "\033[0m"  # Resets all formatting
+
 # Load the variables from .env
 load_dotenv()
+
+# Suppress macOS specific IMK warnings
+sys.stderr = open(os.devnull, 'w')
+
 
 # print the startupscreen, 
 # and ask the user what objects to recognize
@@ -26,6 +33,8 @@ searchtext, labels = launch.start_vigil()
 print("\nPlease wait,\n>>> LOADING NEURAL NET...")
 processor = AutoProcessor.from_pretrained(img_proc.model_id)
 model = AutoModelForZeroShotObjectDetection.from_pretrained(img_proc.model_id).to(img_proc.device)
+
+print(f"{YELLOW}    MODEL LOADED INTO MEMORY{RESET}")
 
 # record the start time
 now = datetime.now()
@@ -46,15 +55,13 @@ rtsp_url_buffed = rtsp_url + "?rtsp_transport=udp&timeout=5000000&buffer_size=81
 import vcapture
 cap = vcapture.VideoCapture(rtsp_url)
 
-YELLOW = "\033[33m"
-RESET = "\033[0m"  # Resets all formatting
-
 print(f"{YELLOW}    CAMERA STREAM ACQUIRED{RESET}")
 
 # Increase the timeout using FFmpeg options (timeout in microseconds)
 # cap.set(cv2.CAP_PROP_BUFFERSIZE, 0)  # Buffer size 0 to avoid buffer overflows (optional)
 
 # sms_email.send_alert(smtp_phonealias, sms_email.basic_launch_subject, sms_email.launch_message)
+launchtime= datetime.now()
 
 while cap.isOpened():
     # Capture the latest frame
@@ -64,13 +71,19 @@ while cap.isOpened():
     prevtime = now
     now = datetime.now()
     protime = now - prevtime
+    uptime = now - launchtime
+    uptime_sec = int(uptime.total_seconds())
+    uhours, remainder = divmod(uptime_sec, 3600)
+    uminutes, useconds = divmod(remainder, 60)
+    
+    formatted_uptime = f"{uhours:02}h{uminutes:02}m{useconds:02}s"
 
     ftime = now.strftime("%Y-%m-%d %H:%M:%S")
     dtime = "{:.3f} sec".format(protime.total_seconds())
 
     print("\n>>> DSKY.AI VISION ALGORITHM RUNNING...") 
-    print("    FRAME : " + ftime)
-    print("    tDELTA : " + dtime)
+    print("    FRAME : " + ftime + " (" + dtime +")")
+    print("    UPTIME : " + formatted_uptime)
     # Skip frames until only the most recent one is available
     # while cap.grab():
     #     print(cap.get(cv2.CAP_PROP_POS_MSEC))

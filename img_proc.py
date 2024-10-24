@@ -166,7 +166,7 @@ def annotate_grab(image, tensors, labels):
     global local_serial_alert_filename
 
     if gun_trigger == 2:
-        print(f"\n{YELLOW}>>> UPLOADING SCREENGRAB TO SECURE CLOUD...{RESET}")
+        print(f"\n{YELLOW}>>> UPLOADING FRAME TO SECURE CLOUD...{RESET}")
         # sms_email.send_email_with_image(smtp_phonealias, "VIGIL WEAPONS DETECT", "camera 001 LIVE", image)
         # replace dynamic timecoded file link (above) with fixed file loc (overwrite)
         # for DEMO ONLY
@@ -190,7 +190,7 @@ def annotate_grab(image, tensors, labels):
         gun_trigger = 99 # no longer used
 
     if gun_trigger == 1:
-        print(f"\n{YELLOW}>>> SAVING SCREENGRAB TO LOCAL ARCHIVE...{RESET}")
+        print(f"\n{YELLOW}>>> SAVING FRAME TO LOCAL ARCHIVE...{RESET}")
         # sms_email.send_email_with_image(smtp_phonealias, "VIGIL WEAPONS DETECT", "camera 001 LIVE", image)
         gtimestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         local_serial_alert_filename = ftp_local_path + "_" + gtimestamp + ".jpg"

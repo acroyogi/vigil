@@ -156,7 +156,7 @@ def send_email_with_image(to_email, subject, message_text, pil_image, override=F
         #         #server.set_debuglevel(True)
         #         loginSendQuit(server, to_email, msg.as_string())
 
-        print(f"\n+++ SCREENGRAB transmitted:\n{tYELLOW}    {alert_user} @ {alert_phone}{tRESET}")
+        print(f"\n+++ FRAME transmitted:\n{tYELLOW}    {alert_user} @ {alert_phone}{tRESET}")
 
     except Exception as e:
         print(f"Failed to send IMAGE : {e}")
