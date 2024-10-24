@@ -101,6 +101,7 @@ else:
         # def rtsp_framegrab(processor, model, frame, searchtext):
 
         image = img_proc.rtsp_framegrab(processor, model, frame, searchtext)
+        cv2.imshow("VIGIL", np.array(image))
 
         #alt-DEBUG
         # cv2.imshow('RTSP Stream', frame)

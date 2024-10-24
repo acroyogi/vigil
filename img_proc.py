@@ -82,7 +82,7 @@ def rtsp_framegrab(processor, model, frame, searchtext):
     annotated_image = annotate_grab(image, tensors, labels)
 
     # display the annotated output image on screen
-    annotated_image.show()  
+    # annotated_image.show()
 
     # save the annotated output image to the local HD
     image_save(annotated_image)
