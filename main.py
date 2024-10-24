@@ -42,74 +42,74 @@ print("    camIP: " + reolink_rtsp_ip + ":" + reolink_rtsp_port)
 rtsp_url_buffed = rtsp_url + "?rtsp_transport=udp&timeout=5000000&buffer_size=8192&max_delay=500000"
 # cap = cv2.VideoCapture(rtsp_url_buffed)
 
-cap = cv2.VideoCapture(rtsp_url)
+# cap = cv2.VideoCapture(rtsp_url)
+import vcapture
+cap = vcapture.VideoCapture(rtsp_url)
 
 print("    CAMERA STREAM ACQUIRED")
 
 # Increase the timeout using FFmpeg options (timeout in microseconds)
-cap.set(cv2.CAP_PROP_BUFFERSIZE, 0)  # Buffer size 0 to avoid buffer overflows (optional)
+# cap.set(cv2.CAP_PROP_BUFFERSIZE, 0)  # Buffer size 0 to avoid buffer overflows (optional)
 
 # sms_email.send_alert(smtp_phonealias, sms_email.basic_launch_subject, sms_email.launch_message)
 
+while cap.isOpened():
+    # Capture the latest frame
+    # and begin processing, 
+    
+    # show elapsed time since last AI run
+    prevtime = now
+    now = datetime.now()
+    protime = now - prevtime
 
+    ftime = now.strftime("%Y-%m-%d %H:%M:%S")
+    dtime = "{:.3f} sec".format(protime.total_seconds())
 
-if not cap.isOpened():
-    print("Error: Could not open video stream.")
-else:
-    while True:
-        # Capture the latest frame
-        # and begin processing, 
-        
-        # show elapsed time since last AI run
-        prevtime = now
-        now = datetime.now()
-        protime = now - prevtime
+    print("\n>>> DSKY.AI VISION ALGORITHM RUNNING...") 
+    print("    FRAME : " + ftime)
+    print("    tDELTA : " + dtime)
+    # Skip frames until only the most recent one is available
+    # while cap.grab():
+    #     print(cap.get(cv2.CAP_PROP_POS_MSEC))
+    #     prevtime = now
+    #     now = datetime.now()
+    #     if (prevtime - now).seconds > 0.1:
+    #         date_time_str = now.strftime("%Y-%m-%d %H:%M:%S")
+    #         print(date_time_str)
+    #         continue
+    #     else:
+    #         print("x", end="", flush=True)
+    #         break
+    #     pass
 
-        ftime = now.strftime("%Y-%m-%d %H:%M:%S")
-        dtime = "{:.3f} sec".format(protime.total_seconds())
+    # fc = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+    # print(fc)
+    # continue
+    # cap.set(cv2.CAP_PROP_POS_FRAMES, fc)
 
-        print("\n>>> DSKY.AI VISION ALGORITHM RUNNING...") 
-        print("    FRAME : " + ftime)
-        print("    tDELTA : " + dtime)
+    # Capture frame-by-frame
+    frame = cap.read()
 
-        # Skip frames until only the most recent one is available
-        # while cap.grab():
-        #     prevtime = now
-        #     now = datetime.now()
-        #     if prevtime - now > timedelta(seconds=1):
-        #         date_time_str = now.strftime("%Y-%m-%d %H:%M:%S")
-        #         print(date_time_str)
-        #     else:
-        #         print("x",end="", flush=True)
-        #         break
-        #     pass
+    # if not ret:
+    #     print("Error: Could not read frame.")
+    #     break
 
-        fc = cap.get(cv2.CAP_PROP_FRAME_COUNT)-1
-        cap.set(cv2.CAP_PROP_POS_FRAMES, fc)
+    # Display the resulting frame on-screen
+    # -------------------------------------
+    # this calls a subroutine from get_grab,
+    # which runs CV object recognition algos on the frame
+    # and outputs a leblled image with bounding boxes
+    # def rtsp_framegrab(processor, model, frame, searchtext):
 
-        # Capture frame-by-frame
-        ret, frame = cap.read()
-        
-        if not ret:
-            print("Error: Could not read frame.")
-            break
-        
-        # Display the resulting frame on-screen
-        # -------------------------------------
-        # this calls a subroutine from get_grab,
-        # which runs CV object recognition algos on the frame
-        # and outputs a leblled image with bounding boxes
-        # def rtsp_framegrab(processor, model, frame, searchtext):
+    image = img_proc.rtsp_framegrab(processor, model, frame, searchtext)
+    cv2.imshow("VIGIL", np.array(image))
 
-        image = img_proc.rtsp_framegrab(processor, model, frame, searchtext)
-        cv2.imshow("VIGIL", np.array(image))
+    # alt-DEBUG
+    # cv2.imshow('RTSP Stream', frame)
 
-        #alt-DEBUG
-        # cv2.imshow('RTSP Stream', frame)
-
-        # Break the loop on 'q' key press
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+    # Break the loop on 'q' key press
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 # Release the capture and close windows
 cap.release()
