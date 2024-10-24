@@ -1,7 +1,9 @@
 import requests
 from datetime import datetime, timedelta
 import sms_email
+
 from _gsecrets import *
+from _localconfig import *
 
 import cv2
 import torch
@@ -170,7 +172,8 @@ def annotate_grab(image, tensors, labels):
 
         gweb_imagelink = public_web_path +"wd_" + gtimestamp + ".jpg"
         g_fullalert = sample_alert_message_prefix + gweb_imagelink + sample_alert_message_suffix + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        sms_email.send_alert(smtp_phonealias, basic_alert_subject, g_fullalert)
+        for alert_user in active_users:
+            sms_email.send_alert(alert_users[alert_user], basic_alert_subject, g_fullalert)
 
         # print("=== STUB : SEND IMAGE LINK")
         # DEBUG: SMS with image link ONLY

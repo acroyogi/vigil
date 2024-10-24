@@ -1,6 +1,7 @@
 # gbr customs
 gsecrets.py
 _gsecrets.py
+_localconfig.py
 
 #test output image repo
 camera-tests-012/

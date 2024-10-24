@@ -9,6 +9,7 @@ from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
 import numpy as np
 
 from _gsecrets import *
+from _localconfig import *
 import launch
 import img_proc
 # import sms_email

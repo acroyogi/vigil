@@ -12,6 +12,8 @@ import io
 
 from datetime import datetime
 from _gsecrets import *
+from _localconfig import *
+
 
 
 # Get the current date and time
@@ -32,11 +34,11 @@ def loginSendQuit(server, to_email, msg):
 
 
 
-def send_alert(to_email, subject, message, override=False):
+def send_alert(recp:AlertUser, subject, message, override=False):
     try:
         msg = EmailMessage()
         msg["From"] = smtp_username
-        msg["To"] = to_email
+        msg["To"] = recp.smtp_phonealias
         msg["Subject"] = subject
 
         body = message
@@ -47,13 +49,13 @@ def send_alert(to_email, subject, message, override=False):
             with smtplib.SMTP(smtp_server, smtp_port) as server:
                 server.set_debuglevel(True)
                 server.starttls()
-                loginSendQuit(server, to_email, msg)
+                loginSendQuit(server, recp.smtp_phonealias, msg)
         else:
             with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
                 #server.set_debuglevel(True)
-                loginSendQuit(server, to_email, msg)
+                loginSendQuit(server, recp.smtp_phonealias, msg)
 
-        print(f"\n+++ SMS successfully transmitted:\n{tYELLOW}    {alert_user} @ {alert_phone}{tRESET}")
+        print(f"\n+++ SMS successfully transmitted:\n{tYELLOW}    {recp.alert_user} @ {recp.alert_phone}{tRESET}")
 
     except Exception as e:
         print(f"Failed to send : {e}")
