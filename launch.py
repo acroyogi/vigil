@@ -1,12 +1,14 @@
+from _gsecrets import *
+
 def start_vigil():
-    print ("""
+    print (f"""
         
 
         +------------------------------------+
           VIGIL 
           real time weapons detection system
 
-          v015.20241023
+          v{g_version}.20241023
           Gregory Roberts + John Heilman
         +------------------------------------+
 

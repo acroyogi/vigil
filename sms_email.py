@@ -20,8 +20,8 @@ date_time_str = now.strftime("%Y-%m-%d %H:%M:%S")
 tYELLOW = "\033[33m"
 tRESET = "\033[0m"  # Resets all formatting
 
-basic_launch_subject = "VIGIL ACTIVE [v015]"
-basic_alert_subject = "VIGIL ALERT!! [v015]"
+basic_launch_subject = f"VIGIL ACTIVE [v{g_version}]"
+basic_alert_subject = f"VIGIL ALERT!! [v{g_version}]"
 alert_message = "ALERT-WEAPON DETECTED"
 
 launch_message = f"""
@@ -35,7 +35,7 @@ sample_alert_message = f"""
 !!ALERT!! WEAPON DETECTED
 =======================
 ADDRESS:
-1521 North Highland Ave.,
+1521 North Highland Ave.
 Los Angeles, CA 90028
 
 LOC: SE entrance

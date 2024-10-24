@@ -4,14 +4,14 @@ from dotenv import load_dotenv
 
 import cv2
 import torch
-from PIL import Image, ImageDraw, ImageFont
+# from PIL import Image, ImageDraw, ImageFont
 from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
 import numpy as np
 
 from _gsecrets import *
 import launch
 import img_proc
-import sms_email
+# import sms_email
  
  
 # Load the variables from .env
@@ -31,7 +31,8 @@ now = datetime.now()
 
 # set the camera stream
 print("\n>>> ACCESSING RTSP VIDEO STREAM...")
-rtsp_url = f"rtsp://{reolink_rtsp_username}:{reolink_rtsp_pw}@{reolink_rtsp_ip}:{reolink_rtsp_port}"
+rtsp_url = f"rtsp://{reolink_rtsp_username}:{reolink_rtsp_pw}@{reolink_rtsp_ip}:{reolink_rtsp_port}/{reolink_rtsp_streamdir}"
+print("    cam: " + reolink_mfg + " " + reolink_model)
 print("    camIP: " + reolink_rtsp_ip + ":" + reolink_rtsp_port)
 
 # Create a VideoCapture object
