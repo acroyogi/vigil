@@ -67,16 +67,24 @@ def rtsp_framegrab(processor, model, frame, searchtext):
         
         global gun_trigger
         if gun_trigger == 0:
-            print("\n=== STUB : SEND ALERT EMAIL")
+            # print("\n=== STUB : SEND ALERT EMAIL")
+            #
+            # this SMS notification was moved to post-render / post-upload, 
+            # because it has a link in the SMS message to the FTP posted image,
+            # and that takes a while to compress and upload...
             # sms_email.send_alert(smtp_phonealias, sms_email.basic_alert_subject, sms_email.sample_alert_message)
             gun_trigger = 1
 
 
-        
-
+    # pump the image into annotate_grab,
+    # which draws all the tensors and labels
+    # atop the raw input feed
     annotated_image = annotate_grab(image, tensors, labels)
 
-    annotated_image.show()  # To display the annoated image on screen
+    # display the annotated output image on screen
+    annotated_image.show()  
+
+    # save the annotated output image to the local HD
     image_save(annotated_image)
 
     return annotated_image

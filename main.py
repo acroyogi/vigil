@@ -38,9 +38,15 @@ print("    camIP: " + reolink_rtsp_ip + ":" + reolink_rtsp_port)
 # Create a VideoCapture object
 # alt-DEBUG : force FFMPEG lib
 # cap = cv2.VideoCapture(rtsp_url, cv2.CAP_FFMPEG)
+rtsp_url_buffed = rtsp_url + "?rtsp_transport=udp&timeout=5000000&buffer_size=8192&max_delay=500000"
+# cap = cv2.VideoCapture(rtsp_url_buffed)
 
 cap = cv2.VideoCapture(rtsp_url)
+
 print("    CAMERA STREAM ACQUIRED")
+
+# Increase the timeout using FFmpeg options (timeout in microseconds)
+cap.set(cv2.CAP_PROP_BUFFERSIZE, 0)  # Buffer size 0 to avoid buffer overflows (optional)
 
 # sms_email.send_alert(smtp_phonealias, sms_email.basic_launch_subject, sms_email.launch_message)
 
