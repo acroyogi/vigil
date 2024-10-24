@@ -46,7 +46,10 @@ rtsp_url_buffed = rtsp_url + "?rtsp_transport=udp&timeout=5000000&buffer_size=81
 import vcapture
 cap = vcapture.VideoCapture(rtsp_url)
 
-print("    CAMERA STREAM ACQUIRED")
+YELLOW = "\033[33m"
+RESET = "\033[0m"  # Resets all formatting
+
+print(f"{YELLOW}    CAMERA STREAM ACQUIRED{RESET}")
 
 # Increase the timeout using FFmpeg options (timeout in microseconds)
 # cap.set(cv2.CAP_PROP_BUFFERSIZE, 0)  # Buffer size 0 to avoid buffer overflows (optional)
@@ -102,7 +105,8 @@ while cap.isOpened():
     # def rtsp_framegrab(processor, model, frame, searchtext):
 
     image = img_proc.rtsp_framegrab(processor, model, frame, searchtext)
-    cv2.imshow("VIGIL", np.array(image))
+    bgr_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+    cv2.imshow("VIGIL", bgr_image)
 
     # alt-DEBUG
     # cv2.imshow('RTSP Stream', frame)
